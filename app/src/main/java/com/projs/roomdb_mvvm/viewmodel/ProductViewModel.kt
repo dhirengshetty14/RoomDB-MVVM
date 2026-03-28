@@ -3,6 +3,7 @@ package com.projs.roomdb_mvvm.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.projs.roomdb_mvvm.model.local.IRepository
 import com.projs.roomdb_mvvm.model.Product
 
@@ -30,7 +31,11 @@ class ProductViewModel(val repo: IRepository): ViewModel() {
         val prodId=repo.addProduct(prod)
         newprodId.postValue(prodId)
     }
-
+}
+class ProductVMFactory(val repo: IRepository): ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return ProductViewModel(repo) as T
+    }
 }
 
 
