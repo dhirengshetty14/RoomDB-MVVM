@@ -6,5 +6,5 @@ import com.projs.roomdb_mvvm.model.Product
 interface IRepository {
     val products: LiveData<List<Product>>
 
-    fun addProduct(p: Product): Long
+   suspend fun addProduct(p: Product): Long
 }

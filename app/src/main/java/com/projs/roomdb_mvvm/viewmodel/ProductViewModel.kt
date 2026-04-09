@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.projs.roomdb_mvvm.model.local.IRepository
 import com.projs.roomdb_mvvm.model.Product
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ProductViewModel(val repo: IRepository): ViewModel() {
 
@@ -28,8 +31,10 @@ class ProductViewModel(val repo: IRepository): ViewModel() {
     {
         var prod= Product(productName = name, category = category, price = price)
 
-        val prodId=repo.addProduct(prod)
-        newprodId.postValue(prodId)
+        viewModelScope.launch(Dispatchers.IO) {
+            val prodId=repo.addProduct(prod)
+            newprodId.postValue(prodId)
+        }
     }
 }
 class ProductVMFactory(val repo: IRepository): ViewModelProvider.NewInstanceFactory() {
