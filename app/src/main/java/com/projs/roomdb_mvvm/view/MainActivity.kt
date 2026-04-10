@@ -12,60 +12,56 @@ import com.projs.roomdb_mvvm.R
 import com.projs.roomdb_mvvm.databinding.ActivityMainBinding
 import com.projs.roomdb_mvvm.model.ProductDB
 import com.projs.roomdb_mvvm.model.local.Repository
-import com.projs.roomdb_mvvm.viewmodel.ProductVMFactory
 import com.projs.roomdb_mvvm.viewmodel.ProductViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.toString
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
     lateinit var binding: ActivityMainBinding
 
-    lateinit var viewModel: ProductViewModel
+    private val viewModel: ProductViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding= ActivityMainBinding.inflate(layoutInflater)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initViewModel()
         setObservers()
         setupEvents()
-
-    }
-
-
-    private fun initViewModel() {
-        val repo= Repository(ProductDB.getInstance(this))
-
-        val factory= ProductVMFactory(repo)
-        viewModel= ViewModelProvider(this,factory)[ProductViewModel::class.java]
     }
 
     private fun setObservers() {
+
         viewModel.products.observe(this) {
             binding.rvProducts.adapter = ProductAdapter(it)
         }
+
         viewModel.newprodId.observe(this) {
             if (it > 0) {
-                AlertDialog.Builder(this@MainActivity)
+                AlertDialog.Builder(this)
                     .setTitle("Success")
-                    .setMessage("Product added successfully with product id = $it")
+                    .setMessage("Product added with id = $it")
                     .show()
             } else {
-                AlertDialog.Builder(this@MainActivity)
+                AlertDialog.Builder(this)
                     .setTitle("Error")
-                    .setMessage("Failed to add the product due to unknown reason. Please retry.")
+                    .setMessage("Failed to add product")
                     .show()
             }
         }
     }
-        fun setupEvents() {
-            binding.btnAddProduct.setOnClickListener {
-                val name = binding.etName.text.toString()
-                val price = binding.etPrice.text.toString().toFloat()
-                val category = binding.etCategory.text.toString()
 
-                viewModel.onInputDataChanged(name, category, price)
+    private fun setupEvents() {
+        binding.btnAddProduct.setOnClickListener {
+            val name = binding.etName.text.toString()
+            val category = binding.etCategory.text.toString()
+            val price = binding.etPrice.text.toString().toFloat()
 
-            }
+            viewModel.onInputDataChanged(name, category, price)
         }
     }
+}

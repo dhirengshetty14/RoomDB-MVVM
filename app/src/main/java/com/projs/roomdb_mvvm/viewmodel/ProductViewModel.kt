@@ -7,39 +7,27 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.projs.roomdb_mvvm.model.local.IRepository
 import com.projs.roomdb_mvvm.model.Product
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductViewModel(val repo: IRepository): ViewModel() {
+@HiltViewModel
+class ProductViewModel @Inject constructor(private val repo: IRepository): ViewModel() {
 
-    val products: LiveData<List<Product>> =repo.products
+    val products: LiveData<List<Product>> = repo.products
 
-    val newprodId= MutableLiveData<Long>()
+    val newprodId = MutableLiveData<Long>()
 
-    private var name: String=""
-    private var category: String=""
-    private var price: Float=0f
 
-    fun onInputDataChanged(n: String,c: String,p: Float){
-        name=n
-        category=c
-        price=p
-        addProduct()
-    }
-
-    private fun addProduct()
-    {
-        var prod= Product(productName = name, category = category, price = price)
+    fun onInputDataChanged(name: String, category: String, price: Float) {
+        val prod = Product(productName = name, category = category, price = price)
 
         viewModelScope.launch(Dispatchers.IO) {
-            val prodId=repo.addProduct(prod)
-            newprodId.postValue(prodId)
+            val id = repo.addProduct(prod)
+            newprodId.postValue(id)
         }
-    }
-}
-class ProductVMFactory(val repo: IRepository): ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ProductViewModel(repo) as T
+
     }
 }
 

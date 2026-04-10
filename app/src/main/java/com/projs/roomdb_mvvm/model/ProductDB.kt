@@ -9,16 +9,5 @@ import androidx.room.RoomDatabase
 abstract class ProductDB : RoomDatabase() {
 
     abstract fun productDao(): ProductDao
-    companion object {
-        private lateinit var prodDB: ProductDB
 
-        fun getInstance(context: Context): ProductDB {
-            if (!::prodDB.isInitialized) {
-                prodDB = Room.databaseBuilder(context, ProductDB::class.java, "ShopDB")
-                    .allowMainThreadQueries()
-                    .build()
-            }
-            return prodDB
-        }
-    }
 }
